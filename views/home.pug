@@ -2,5 +2,12 @@
 head
     title Home
 body
-    p Home!
+    div
+        form#logout(method="POST" action="/logout")
+            input(type="submit" value="Logout")
+        form#addFriend(method="GET" action="/addFriend")
+            input(type="submit" value="Add Friend")
+    h1 Home!
+    p Application coming soon...
+
 </html>
