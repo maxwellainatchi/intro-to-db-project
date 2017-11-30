@@ -38,7 +38,6 @@ let userGroups = function (username) {
 
 
 let getUsernames = function (firstname, lastname) {
-	someObj.name === someObj["name"]
     return db.query(
         `SELECT username
 		 FROM Person 
