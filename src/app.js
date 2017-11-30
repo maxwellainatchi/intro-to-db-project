@@ -16,6 +16,18 @@ let PriCoSha = class {
 		});
 	}
 
+	getFriendGroups() {
+        return lib.userGroups(this.user.username)
+	}
+
+	getUsername(firstName, lastName){
+		return lib.getUsernames(firstName, lastName);
+	}
+
+	addFriendToGroup(username, friendgroup, owner){
+        return lib.addFriendToGroup(username, friendgroup, this.user.username);
+    }
+
 	register (username, password) {
 		this.log.info("register", {username});
 		return lib.register(username, password).then(token => {
