@@ -28,7 +28,38 @@ let register = function (username, password) {
 	})
 }
 
+let userGroups = function (username) {
+    return utils.validateUsername(username).then(() => db.query(
+        `SELECT FriendGroup.name
+		 FROM Owns
+		 WHERE username='${username}';`
+    )).then(results => results.map(result => result.name))
+}
+
+
+let getUsernames = function (firstname, lastname) {
+	someObj.name === someObj["name"]
+    return db.query(
+        `SELECT username
+		 FROM Person 
+		 WHERE first_name='${firstname}' AND last_name='${lastname}';`
+    ).then(results => results.map(result => result.username))
+}
+
+
+let addFriendToGroup = function (username, friendgroup, owner) {
+    return utils.validateUsername(username).then(() => db.query(
+        `INSERT INTO Member (username, group_name, username_creator)
+		 VALUES ('${username}','${friendgroup}','${owner}');`
+    )).then(() => {
+        return token
+    })
+}
+
 module.exports = {
 	validateLogin,
-	register
+	register,
+	userGroups,
+	getUsernames,
+	addFriendToGroup
 }
