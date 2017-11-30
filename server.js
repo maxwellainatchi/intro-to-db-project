@@ -14,11 +14,6 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/addFriend", async (req, res, next) => {
-	service.
-	res.render("addFriend")
-});
-
 app.post("/logout", async (req, res, next) => {
 	if (!service.user) {
 		res.status(400).send("not logged in")
