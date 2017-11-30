@@ -16,13 +16,21 @@ let PriCoSha = class {
 		});
 	}
 
-	spin () {
-		let time = setInterval(() => {
-			if (this.shouldStop) {
-				clearInterval(time);
-			}
-		}, 1000);
+	register (username, password) {
+		this.log.info("register", {username});
+		return lib.register(username, password).then(token => {
+			this.log.info("register", {username, success: true});
+			this.user = {username, token};
+		});
 	}
+
+	// spin () {
+	// 	let time = setInterval(() => {
+	// 		if (this.shouldStop) {
+	// 			clearInterval(time);
+	// 		}
+	// 	}, 1000);
+	// }
 
 	logout () {
 		this.log.info("logout", {username: this.user.username});
