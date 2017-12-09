@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const {ValidationError, Errors} = require('./errors');
 
 let sha512 = function(password) {
-	let hash = crypto.createHmac('sha512', "");
+	let hash = crypto.createHmac('sha512', "salt");
 	hash.update(password);
 	return hash.digest('hex');
 };

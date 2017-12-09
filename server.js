@@ -42,6 +42,26 @@ app.get("/login", (req, res, next) => {
 	}
 })
 
+app.post("/addFriend", async(req, res, next) => {
+	let friend = await service.getUsername(req.body.firstName, req.body.lastName)
+	console.log("Friend you're trying to add is: "+friend)
+	console.log("Group you're trying to add him to: "+req.body.friendGroup)
+	let success = await service.addFriendToGroup(String(friend), req.body.friendGroup, service.user.username)
+	if(success) {
+		res.redirect("/home")
+    }
+    else {
+		alert("Your attempt failed! Please try again")
+	}
+})
+
+app.get("/addfriend", async (req, res, next) => {
+	let groups = await service.getFriendGroups()
+	res.render("addfriend",{
+		groups
+	})
+})
+
 app.post("/register", async (req, res, next) => {
 	if (service.user) {
 		res.status(400).send("already logged in")

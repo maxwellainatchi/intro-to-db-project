@@ -4,11 +4,12 @@ const {ValidationError, Errors} = require('./errors');
 
 let validateLogin = function (username, password) {
 	// TODO: escape password
+	let token = utils.sha512(password);
 	return utils.validateUsername(username).then(() => db.query(
 		`SELECT username, password 
 		 FROM Person 
 		 WHERE username='${username}' 
-		 	AND password='${utils.sha512(password)}';`
+		 	AND password='${token}';`
 	)).then(results => {
 		if (results[0]) {
 			return results[0].password
@@ -30,10 +31,10 @@ let register = function (username, password) {
 
 let userGroups = function (username) {
     return utils.validateUsername(username).then(() => db.query(
-        `SELECT FriendGroup.name
-		 FROM Owns
+        `SELECT FriendGroup.group_name
+		 FROM FriendGroup
 		 WHERE username='${username}';`
-    )).then(results => results.map(result => result.name))
+    )).then(results => results.map(result => result.group_name))
 }
 
 
@@ -51,7 +52,7 @@ let addFriendToGroup = function (username, friendgroup, owner) {
         `INSERT INTO Member (username, group_name, username_creator)
 		 VALUES ('${username}','${friendgroup}','${owner}');`
     )).then(() => {
-        return token
+        return true
     })
 }
 
