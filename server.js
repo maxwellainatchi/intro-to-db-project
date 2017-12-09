@@ -62,6 +62,18 @@ app.get("/addfriend", async (req, res, next) => {
 	})
 })
 
+app.get("/addcontent", async(req, res, next) => {
+	res.render("addcontent")
+})
+
+app.post("/addcontent", async(req, res, next) => {
+	let pub = 0
+	if(req.body.public == "Public") {
+        pub = 1
+    }
+	await service.addContent(service.user.username, req.body.imageLink, req.body.title, pub)
+})
+
 app.post("/register", async (req, res, next) => {
 	if (service.user) {
 		res.status(400).send("already logged in")

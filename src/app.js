@@ -28,6 +28,10 @@ let PriCoSha = class {
         return lib.addFriendToGroup(username, friendgroup, this.user.username);
     }
 
+    addContent(username, filePath, title, pub) {
+		return lib.addContent(username, filePath, title, pub)
+	}
+
 	register (username, password) {
 		this.log.info("register", {username});
 		return lib.register(username, password).then(token => {

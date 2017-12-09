@@ -1,0 +1,19 @@
+doctype
+<html>
+head
+    title Add Content
+body
+    form#addContent(method="POST", action="/addContent")
+        div
+            label(for="title") Title:
+            input#title(name="title")
+        div
+            label(for="imageLink") Link to image:
+            input#imageLink(name="imageLink")
+        div
+            select(name="public")
+                option Public
+                option Private
+        div
+            input#Submit(type="Submit", value="Post Content")
+</html>
