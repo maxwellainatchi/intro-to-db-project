@@ -44,6 +44,10 @@ let PriCoSha = class {
 		});
 	}
 
+	getProposedTags() {
+		return lib.getProposedTags(this.user.username)
+	}
+
 	logout () {
 		this.log.info("logout", {username: this.user.username});
 		this.user = null;

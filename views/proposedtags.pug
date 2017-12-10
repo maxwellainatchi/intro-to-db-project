@@ -1,0 +1,22 @@
+doctype
+<html>
+head
+    title Proposed Tags
+body
+    form#tagAction(method="POST", action="/proposedtags")
+        div
+            p Select tag to review
+            select(name="propTags")
+                for result in results
+                    option(value=result.id) #{result.username_tagger} tagged you in #{result.content_name}
+        div
+            p Select action
+            select(name="propAction")
+                option(value="accept") Accept tag
+                option(value="reject") Reject tag
+        div
+            p
+            input#Submit(type="Submit", value="Commit change to tag")
+</html>
+
+

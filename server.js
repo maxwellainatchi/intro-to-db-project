@@ -84,10 +84,20 @@ app.get("/addcontent", async(req, res, next) => {
 
 app.post("/addcontent", async(req, res, next) => {
 	let pub = 0
-	if(req.body.public == "Public") {
+	if(req.body.public === "Public") {
         pub = 1
     }
 	await service.addContent(service.user.username, req.body.imageLink, req.body.title, pub)
+})
+
+app.get("/proposedtags", async(req, res, next) => {
+	let results = await service.getProposedTags()
+	for (result in results) {
+		console.log(result.id)
+	}
+	res.render("proposedtags", {
+		results
+    })
 })
 
 app.post("/register", async (req, res, next) => {

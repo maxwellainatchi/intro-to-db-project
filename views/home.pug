@@ -9,6 +9,8 @@ body
             input(type="submit" value="Add Friend")
         form#addContent(method="GET" action="/addcontent")
             input(type="submit" value="Add Content")
+        form#proposedTags(method="GET" action="/proposedtags")
+            input(type="submit" value="Review proposed tags")
     h1 Welcome, #{user.username}!
     p Application coming soon...
 
