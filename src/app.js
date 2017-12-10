@@ -44,14 +44,6 @@ let PriCoSha = class {
 		});
 	}
 
-	// spin () {
-	// 	let time = setInterval(() => {
-	// 		if (this.shouldStop) {
-	// 			clearInterval(time);
-	// 		}
-	// 	}, 1000);
-	// }
-
 	logout () {
 		this.log.info("logout", {username: this.user.username});
 		this.user = null;
