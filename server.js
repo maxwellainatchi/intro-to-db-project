@@ -100,6 +100,18 @@ app.get("/proposedtags", async(req, res, next) => {
     })
 })
 
+app.post("/proposedtags", async(req, res, next) => {
+	let selectedTag = JSON.parse(req.body.propTags)
+	// console.log(req.body.propTag)
+	if(req.body.propAction == "accept") {
+		await service.acceptTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
+	}
+	else {
+		await service.rejectTag(req.body.propTags.id, req.body.propTags.username_tagger, service.user.username)
+	}
+
+})
+
 app.post("/register", async (req, res, next) => {
 	if (service.user) {
 		res.status(400).send("already logged in")

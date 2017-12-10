@@ -57,10 +57,10 @@ let addFriendToGroup = function (username, friendgroup, owner) {
 }
 
 let addContent = function(username, filePath, title, pub) {
-	var today = new Date()
-    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var dateTime = date+' '+time;
+	let today = new Date()
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let dateTime = date+' '+time;
 	return utils.validateUsername(username).then(() => db.query(
 		`INSERT INTO Content (username, timest, file_path, content_name, public)
 		VALUES ('${username}','${dateTime}','${filePath}','${title}','${pub}');`
@@ -89,6 +89,17 @@ let getProposedTags = function(username) {
     })
 }
 
+let acceptTag = function(pid, tagger, taggee) {
+	console.log(pid, tagger, taggee)
+	return utils.validateUsername(taggee).then(() => db.query(
+		`UPDATE Tag 
+		SET status=1
+		WHERE id='${pid}' AND username_tagger='${tagger}' AND username_taggee='${taggee}';`
+	)).then(results => {
+		console.log(results)
+	})
+}
+
 module.exports = {
 	validateLogin,
 	register,
@@ -97,5 +108,6 @@ module.exports = {
 	addFriendToGroup,
 	addContent,
 	getComments,
-	getProposedTags
+	getProposedTags,
+	acceptTag
 }

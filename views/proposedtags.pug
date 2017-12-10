@@ -8,7 +8,7 @@ body
             p Select tag to review
             select(name="propTags")
                 for result in results
-                    option(value=result.id) #{result.username_tagger} tagged you in #{result.content_name}
+                    option(value=result) #{result.username_tagger} tagged you in #{result.content_name}
         div
             p Select action
             select(name="propAction")

@@ -48,6 +48,10 @@ let PriCoSha = class {
 		return lib.getProposedTags(this.user.username)
 	}
 
+	acceptTag(pid, tagger, taggee) {
+		return lib.acceptTag(pid, tagger, taggee)
+    }
+
 	logout () {
 		this.log.info("logout", {username: this.user.username});
 		this.user = null;
