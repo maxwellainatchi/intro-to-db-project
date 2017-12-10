@@ -16,6 +16,10 @@ let PriCoSha = class {
 		});
 	}
 
+	getComments(pid) {
+		return lib.getComments(pid)
+	}
+
 	getFriendGroups() {
         return lib.userGroups(this.user.username)
 	}

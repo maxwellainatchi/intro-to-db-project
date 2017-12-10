@@ -69,11 +69,21 @@ let addContent = function(username, filePath, title, pub) {
 	})
 }
 
+let getComments = function(pid) {
+	return db.query(
+		`SELECT comment_text FROM Comment
+		WHERE id='${pid}';`
+	).then(() => {
+		return true
+	})
+}
+
 module.exports = {
 	validateLogin,
 	register,
 	userGroups,
 	getUsernames,
 	addFriendToGroup,
-	addContent
+	addContent,
+	getComments
 }
