@@ -14,6 +14,22 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+	if (!["/login", "/register"].includes(req.url) && !service.user) {
+		res.render('login')
+	} else {
+		next()
+	}
+})
+
+app.use((req, res, next) => {
+	if (["/login", "/register"].includes(req.url) && service.user) {
+		res.redirect('home')
+	} else {
+		next()
+	}
+})
+
 app.post("/logout", async (req, res, next) => {
 	if (!service.user) {
 		res.status(400).send("not logged in")
@@ -24,22 +40,22 @@ app.post("/logout", async (req, res, next) => {
 });
 
 app.post("/login", async (req, res, next) => {
-	if (service.user) {
-		res.status(400).send("already logged in")
-	} else if (req.body.username && req.body.password) {
-		await service.login(req.body.username, req.body.password)
-		res.redirect("/home")
+	if (!req.body.username) {
+		res.render('login', {error: "Missing username!"})
+	} else if (!req.body.password) {
+		res.render('login', {error: "Missing username!"})
 	} else {
-		res.status(400).send("missing required params")
+		try {
+			await service.login(req.body.username, req.body.password)
+			res.redirect("/home")
+		} catch (err) {
+			res.render('login', {error: "Invalid username or password!"})
+		}
 	}
 });
 
 app.get("/login", (req, res, next) => {
-	if (service.user) {
-		res.redirect("/home")
-	} else {
-		res.render("login");
-	}
+	res.render("login");
 })
 
 app.post("/addFriend", async(req, res, next) => {
@@ -86,27 +102,15 @@ app.post("/register", async (req, res, next) => {
 })
 
 app.get("/register", async (req, res, next) => {
-	if (service.user) {
-		res.redirect("/home")
-	} else {
-		res.render("register");
-	}
+	res.render("register");
 })
 
 app.get("/home", (req, res) => {
-	if (service.user) {
-		res.render("home")
-	} else {
-		res.redirect("/login");
-	}
+	res.render("home", {user: service.user})
 })
 
 app.get("/", (req, res) => {
-	if (service.user) {
-		res.redirect("/home")
-	} else {
-		res.redirect("/login");
-	}
+	res.redirect("/home")
 });
 
 app.use((err, req, res, next) => {
