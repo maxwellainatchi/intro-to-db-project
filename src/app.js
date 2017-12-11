@@ -44,6 +44,18 @@ let PriCoSha = class {
 		});
 	}
 
+	getProposedTags() {
+		return lib.getProposedTags(this.user.username)
+	}
+
+	acceptTag(pid, tagger, taggee) {
+		return lib.acceptTag(pid, tagger, taggee)
+    }
+
+    rejectTag(pid, tagger, taggee) {
+		return lib.rejectTag(pid, tagger, taggee)
+	}
+
 	logout () {
 		this.log.info("logout", {username: this.user.username});
 		this.user = null;

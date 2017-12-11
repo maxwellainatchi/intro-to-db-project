@@ -59,15 +59,26 @@ app.get("/login", (req, res, next) => {
 })
 
 app.post("/addFriend", async(req, res, next) => {
-	let friend = await service.getUsername(req.body.firstName, req.body.lastName)
-	console.log("Friend you're trying to add is: "+friend)
-	console.log("Group you're trying to add him to: "+req.body.friendGroup)
-	let success = await service.addFriendToGroup(String(friend), req.body.friendGroup, service.user.username)
-	if(success) {
-		res.redirect("/home")
+	let groups = await service.getFriendGroups()
+	try {
+        let friend = await
+        service.getUsername(req.body.firstName, req.body.lastName)
+        console.log("Friend you're trying to add is: " + friend)
+        console.log("Group you're trying to add him to: " + req.body.friendGroup)
+        let success = await
+        service.addFriendToGroup(String(friend), req.body.friendGroup, service.user.username)
+        results = await
+        service.getProposedTags
+        res.render("addFriend", {
+            groups,
+            success: true
+        })
     }
-    else {
-		alert("Your attempt failed! Please try again")
+    catch(error) {
+        res.render("addFriend", {
+            groups,
+            error: true
+        })
 	}
 })
 
@@ -87,7 +98,51 @@ app.post("/addcontent", async(req, res, next) => {
 	if(req.body.public == "Public") {
         pub = 1
     }
-	await service.addContent(service.user.username, req.body.imageLink, req.body.title, pub)
+	try {
+		await service.addContent(service.user.username, req.body.imageLink, req.body.title, pub)
+        res.render("addcontent", {
+            success: true
+        })
+	}
+	catch(error) {
+        res.render("addcontent", {
+            error: true
+        })
+    }
+})
+
+app.get("/proposedtags", async(req, res, next) => {
+	let results = await service.getProposedTags()
+	for (result in results) {
+		console.log(result.id)
+	}
+	res.render("proposedtags", {
+		results
+    })
+})
+
+app.post("/proposedtags", async(req, res, next) => {
+    let results = await service.getProposedTags
+	try {
+        let selectedTag = JSON.parse(req.body.propTags)
+        if(req.body.propAction == "accept") {
+    		await service.acceptTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
+		}
+		else if(req.body.propAction == "reject"){
+    		await service.rejectTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
+		}
+		results = await service.getProposedTags
+		res.render("proposedtags", {
+				results,
+				success: true
+		})
+	}
+	catch(error) {
+		res.render("proposedtags", {
+			results,
+			error: true
+		})
+	}
 })
 
 app.post("/register", async (req, res, next) => {

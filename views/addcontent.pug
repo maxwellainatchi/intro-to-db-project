@@ -4,6 +4,12 @@ head
     title Add Content
 body
     form#addContent(method="POST", action="/addContent")
+        if success
+            div
+                p Upload success!
+        if error
+            div
+                p Upload failed!
         div
             label(for="title") Title:
             input#title(name="title")

@@ -2,6 +2,12 @@
 head
     title Add Friend
 body
+    div
+        if success
+            p Friend added!
+    div
+        if error
+            p Failed to add friend!
     p Select friend group to add to:
     form#addFriendToGroup(method="POST", action="")
         div
