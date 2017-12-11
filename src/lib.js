@@ -18,12 +18,14 @@ let validateLogin = async function (username, password) {
 	throw new ValidationError(Errors.InvalidCredentials, {username, password});
 }
 
-let register = function (username, password) {
+let register = function (username, password, name) {
 	// TODO: escape password
 	let token = utils.sha512(password);
+	let [firstName, ...lastName] = name.split();
+	lastName = lastName.join(" ");
 	return utils.validateUsername(username).then(() => db.query(
-		`INSERT INTO Person (username, password)
-		 VALUES ('${username}', '${token}');`
+		`INSERT INTO Person (username, password, first_name, last_name)
+		 VALUES ('${username}', '${token}', '${firstName}', '${lastName}');`
 	)).then(() => {
 		return token
 	})

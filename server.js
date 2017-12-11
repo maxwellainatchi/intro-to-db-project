@@ -128,14 +128,22 @@ app.post("/register", async (req, res, next) => {
     if (!req.body.username) {
         res.render('register', {error: "Missing username!"})
     } else if (!req.body.password) {
-        res.render('register', {error: "Missing username!"})
+        res.render('register', {error: "Missing password!"})
+    } else if (!req.body.passwordconfirm || req.body.password !== req.body.passwordconfirm) {
+        res.render('register', {error: "Password doesn't match confirmation!"})
+    } else if (!req.body.name) {
+        res.render('register', {error: "Missing name!"})
     } else {
-        let {username, password} = req.body;
-        let token = await lib.register(username, password);
-        log.info("register", {username, success: true});
-        res.cookie("username", username);
-        res.cookie("usertoken", token);
-        res.redirect("/home")
+    	try {
+            let {username, password, name} = req.body;
+            let token = await lib.register(username, password, name);
+            log.info("register", {username, success: true});
+            res.cookie("username", username);
+            res.cookie("usertoken", token);
+            res.redirect("/home")
+        } catch (err) {
+    		res.render('register', {error: err.message})
+	    }
     }
 })
 
