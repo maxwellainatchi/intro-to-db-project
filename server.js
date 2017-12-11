@@ -125,21 +125,18 @@ app.post("/proposedtags", async(req, res, next) => {
 })
 
 app.post("/register", async (req, res, next) => {
-	if (req.user) {
-		res.status(400).send("already logged in")
-	} else if (req.body.username && req.body.password) {
-        try {
-            let {username, password} = req.body;
-            let token = await lib.validateLogin(username, password).
-            log.info("register", {username, success: true});
-            res.cookie("user", JSON.stringify({username, token}));
-            res.redirect("/home")
-        } catch (err) {
-            res.render('register', {error: "Invalid username or password!"})
-        }
-	} else {
-		res.status(400).send("missing required params")
-	}
+    if (!req.body.username) {
+        res.render('register', {error: "Missing username!"})
+    } else if (!req.body.password) {
+        res.render('register', {error: "Missing username!"})
+    } else {
+        let {username, password} = req.body;
+        let token = await lib.register(username, password);
+        log.info("register", {username, success: true});
+        res.cookie("username", username);
+        res.cookie("usertoken", token);
+        res.redirect("/home")
+    }
 })
 
 app.get("/register", async (req, res, next) => {
