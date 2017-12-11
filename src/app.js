@@ -24,6 +24,10 @@ let PriCoSha = class {
         return lib.userGroups(this.user.username)
 	}
 
+    getVisibleContent() {
+        return lib.visibleContent(this.user.username)
+    }
+
 	getUsername(firstName, lastName){
 		return lib.getUsernames(firstName, lastName);
 	}
@@ -40,6 +44,10 @@ let PriCoSha = class {
     addContent(username, filePath, title, pub) {
 		return lib.addContent(username, filePath, title, pub)
 	}
+
+    addTag(usernamex, content, usernamey) {
+        return lib.addTag(usernamex, content, usernamey)
+    }
 
 	register (username, password) {
 		this.log.info("register", {username});

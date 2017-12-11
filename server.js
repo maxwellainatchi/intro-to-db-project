@@ -142,6 +142,51 @@ app.post("/addcontent", async(req, res, next) => {
     }
 })
 
+app.get("/addTag", async(req, res, next) => {
+    let content = await lib.getVisibleContent(req.user.username)
+    res.render("addTag",{
+        content
+    })
+})
+
+app.post("/addTag", async(req, res, next) => {
+	console.log(req.body.firstName +" "+ req.body.lastName)
+    let friend = await lib.getUsernames(req.body.firstName, req.body.lastName)
+	if (friend) {
+		console.log("Friend you're trying to tag is: " + friend)
+		console.log("Content to tag them in: "+req.body.content)
+		try {
+			let success = await lib.addTag(req.user.username, req.body.content, friend)
+			if (!success) {
+				throw new Error("Not visible");
+			}
+		} catch (err) {
+			let message;
+			if (err.code === "ER_DUP_ENTRY") {
+				message = "Tag already exists!"
+			} else {
+				message = err.message
+			}
+            let content = await lib.getVisibleContent(req.user.username)
+			res.render("addTag", {error: message, content})
+		}
+	} else {
+        console.log("you don't have that friend")
+        let content = await lib.getVisibleContent(req.user.username)
+		res.render('addTag', {error: "You don't have that friend bb", content})
+    }
+})
+
+app.post("/register", async (req, res, next) => {
+	if (service.user) {
+		res.status(400).send("already logged in")
+	} else if (req.body.username && req.body.password) {
+		await service.register(req.body.username, req.body.password)
+		res.redirect("/home")
+	} else {
+		res.status(400).send("missing required params")
+	}
+})
 app.get("/proposedtags", async(req, res, next) => {
 	let results = await lib.getProposedTags(req.user.username)
 	for (result in results) {
@@ -217,7 +262,7 @@ app.get("/", (req, res) => {
 	res.redirect("/home")
 });
 
-app.use((err, req, res, next) => {
+app.use(async (err, req, res, next) => {
 	log.error(err.stack, {err});
 	res.render("error", {err})
 })
