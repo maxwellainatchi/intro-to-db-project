@@ -194,7 +194,13 @@ app.post("/register", async (req, res, next) => {
             res.cookie("usertoken", token);
             res.redirect("/home")
         } catch (err) {
-    		res.render('register', {error: err.message})
+    		let message;
+    		if (err.code === "ER_DUP_ENTRY") {
+    			message = `Username ${req.body.username} already taken!`
+		    } else {
+    			message = err.message
+		    }
+    		res.render('register', {error: message})
 	    }
     }
 })
