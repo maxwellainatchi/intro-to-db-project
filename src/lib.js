@@ -58,6 +58,13 @@ let addFriendToGroup = function (username, friendgroup, owner) {
     })
 }
 
+let createFriendGroup = function(owner, title, desc) {
+	return utils.validateUsername(owner).then(() => db.query(
+		`INSERT INTO FriendGroup (group_name, username, description)
+		VALUES ('${title}','${owner}','${desc}');`
+	))
+}
+
 let addContent = function(username, filePath, title, pub) {
 	return utils.validateUsername(username).then(() => db.query(
 		`INSERT INTO Content (username, file_path, content_name, public)
@@ -112,5 +119,6 @@ module.exports = {
 	getComments,
 	getProposedTags,
 	acceptTag,
-	rejectTag
+	rejectTag,
+	createFriendGroup
 }

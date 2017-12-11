@@ -71,22 +71,22 @@ app.get("/login", (req, res, next) => {
 })
 
 app.post("/addFriend", async(req, res, next) => {
-	let groups = await service.getFriendGroups()
+	let groups = await lib.userGroups(req.user.username)
 	try {
-        let friend = await
-        service.getUsername(req.body.firstName, req.body.lastName)
+        let friend = await lib.getUsernames(req.body.firstName, req.body.lastName)
         console.log("Friend you're trying to add is: " + friend)
         console.log("Group you're trying to add him to: " + req.body.friendGroup)
         let success = await
-        service.addFriendToGroup(String(friend), req.body.friendGroup, service.user.username)
+        lib.addFriendToGroup(String(friend), req.body.friendGroup, req.user.username)
         results = await
-        service.getProposedTags
+        lib.getProposedTags(req.user.username)
         res.render("addFriend", {
             groups,
             success: true
         })
     }
     catch(error) {
+		console.log(error)
         res.render("addFriend", {
             groups,
             error: true
@@ -95,10 +95,29 @@ app.post("/addFriend", async(req, res, next) => {
 })
 
 app.get("/addfriend", async (req, res, next) => {
-	let groups = await service.getFriendGroups()
+	let groups = await lib.userGroups(req.user.username)
 	res.render("addfriend",{
 		groups
 	})
+})
+
+app.get("/createfriendgroup", async(req, res, next) => {
+	res.render("createfriendgroup")
+})
+
+app.post("/createfriendgroup", async(req, res, next) => {
+	try {
+		await lib.createFriendGroup(req.user.username, req.body.name, req.body.description)
+		res.render("createfriendgroup", {
+			success: true
+		})
+	}
+	catch(error) {
+		console.log(error)
+		res.render("createfriendgroup", {
+			error: true
+    })
+	}
 })
 
 app.get("/addcontent", async(req, res, next) => {
@@ -111,7 +130,7 @@ app.post("/addcontent", async(req, res, next) => {
         pub = 1
     }
 	try {
-		await service.addContent(service.user.username, req.body.imageLink, req.body.title, pub)
+		await lib.addContent(req.user.username, req.body.imageLink, req.body.title, pub)
         res.render("addcontent", {
             success: true
         })
@@ -124,7 +143,7 @@ app.post("/addcontent", async(req, res, next) => {
 })
 
 app.get("/proposedtags", async(req, res, next) => {
-	let results = await service.getProposedTags()
+	let results = await lib.getProposedTags(req.user.username)
 	for (result in results) {
 		console.log(result.id)
 	}
@@ -134,16 +153,16 @@ app.get("/proposedtags", async(req, res, next) => {
 })
 
 app.post("/proposedtags", async(req, res, next) => {
-    let results = await service.getProposedTags
+    let results = await lib.getProposedTags(req.user.username)
 	try {
         let selectedTag = JSON.parse(req.body.propTags)
         if(req.body.propAction == "accept") {
-    		await service.acceptTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
+    		await lib.acceptTag(selectedTag.id, selectedTag.username_tagger, req.user.username)
 		}
 		else if(req.body.propAction == "reject"){
-    		await service.rejectTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
+    		await lib.rejectTag(selectedTag.id, selectedTag.username_tagger, req.user.username)
 		}
-		results = await service.getProposedTags
+		results = await lib.getProposedTags(req.user.username)
 		res.render("proposedtags", {
 				results,
 				success: true
@@ -155,28 +174,6 @@ app.post("/proposedtags", async(req, res, next) => {
 			error: true
 		})
 	}
-})
-
-app.get("/proposedtags", async(req, res, next) => {
-	let results = await service.getProposedTags()
-	for (result in results) {
-		console.log(result.id)
-	}
-	res.render("proposedtags", {
-		results
-    })
-})
-
-app.post("/proposedtags", async(req, res, next) => {
-	let selectedTag = JSON.parse(req.body.propTags)
-	// console.log(req.body.propTag)
-	if(req.body.propAction == "accept") {
-		await service.acceptTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
-	}
-	else {
-		await service.rejectTag(req.body.propTags.id, req.body.propTags.username_tagger, service.user.username)
-	}
-
 })
 
 app.post("/register", async (req, res, next) => {

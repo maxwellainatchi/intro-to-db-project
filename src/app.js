@@ -32,6 +32,11 @@ let PriCoSha = class {
         return lib.addFriendToGroup(username, friendgroup, this.user.username);
     }
 
+    createFriendGroup(title, desc) {
+		return lib.createFriendGroup(this.rect.user.username, title, desc)
+
+	}
+
     addContent(username, filePath, title, pub) {
 		return lib.addContent(username, filePath, title, pub)
 	}

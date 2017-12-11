@@ -11,6 +11,8 @@ body
             input(type="submit" value="Add Content")
         form#proposedTags(method="GET" action="/proposedtags")
             input(type="submit" value="Review proposed tags")
+        form#createGroup(method="GET" action="/createfriendgroup")
+            input(type="submit" value="Create Friend Group")
     h1 Welcome, #{user.username}!
     p Application coming soon...
 

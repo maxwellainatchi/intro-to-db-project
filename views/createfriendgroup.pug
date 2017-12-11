@@ -1,0 +1,21 @@
+doctype
+<html>
+    head
+        title Create Friend Group
+    body
+        div
+            if success
+                p Group created!
+        div
+            if error
+                p Group failed to be created!
+        form#newGroup(method="POST", action="/createfriendgroup")
+            div
+                label(for="name") Name of Friend Group:
+                input#name(name="name")
+            div
+                label(for="description") Description:
+                input#description(name="description")
+            div
+                input#Submit(type="Submit", value="Create Friend Group")
+</html>
