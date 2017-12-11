@@ -1,9 +1,12 @@
 const app = new (require("express"))();
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const service = new (require('./src/app'))({
 	db: require('./src/db'),
 	log: require('winston')
 });
+const lib = require('./src/lib');
+const log = require('winston');
 
 app.set("view engine", "pug");
 
@@ -11,19 +14,23 @@ app.use((req, res, next) => {
 	service.log.info(`HTTP ${req.method} ${req.url}`);
 	next();
 });
-
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-	if (!["/login", "/register"].includes(req.url) && !service.user) {
+    if (["/login", "/register"].includes(req.url)) { return next() }
+    let username = req.cookies.username;
+    let token = req.cookies.usertoken;
+	if (!(username && token)) {
 		res.render('login')
 	} else {
+		req.user = {username, token};
 		next()
 	}
 })
 
 app.use((req, res, next) => {
-	if (["/login", "/register"].includes(req.url) && service.user) {
+	if (["/login", "/register"].includes(req.url) && req.user) {
 		res.redirect('home')
 	} else {
 		next()
@@ -31,10 +38,11 @@ app.use((req, res, next) => {
 })
 
 app.post("/logout", async (req, res, next) => {
-	if (!service.user) {
+	if (!req.user) {
 		res.status(400).send("not logged in")
 	} else {
-		service.logout()
+		res.cookie("username", "");
+		res.cookie("usertoken", "");
 	}
 	res.redirect("/")
 });
@@ -46,7 +54,11 @@ app.post("/login", async (req, res, next) => {
 		res.render('login', {error: "Missing username!"})
 	} else {
 		try {
-			await service.login(req.body.username, req.body.password)
+			let {username, password} = req.body;
+            let token = await lib.validateLogin(username, password);
+            log.info("login", {username, success: true});
+            res.cookie("username", username);
+            res.cookie("usertoken", token);
 			res.redirect("/home")
 		} catch (err) {
 			res.render('login', {error: "Invalid username or password!"})
@@ -168,14 +180,26 @@ app.post("/proposedtags", async(req, res, next) => {
 })
 
 app.post("/register", async (req, res, next) => {
-	if (service.user) {
-		res.status(400).send("already logged in")
-	} else if (req.body.username && req.body.password) {
-		await service.register(req.body.username, req.body.password)
-		res.redirect("/home")
-	} else {
-		res.status(400).send("missing required params")
-	}
+    if (!req.body.username) {
+        res.render('register', {error: "Missing username!"})
+    } else if (!req.body.password) {
+        res.render('register', {error: "Missing password!"})
+    } else if (!req.body.passwordconfirm || req.body.password !== req.body.passwordconfirm) {
+        res.render('register', {error: "Password doesn't match confirmation!"})
+    } else if (!req.body.name) {
+        res.render('register', {error: "Missing name!"})
+    } else {
+    	try {
+            let {username, password, name} = req.body;
+            let token = await lib.register(username, password, name);
+            log.info("register", {username, success: true});
+            res.cookie("username", username);
+            res.cookie("usertoken", token);
+            res.redirect("/home")
+        } catch (err) {
+    		res.render('register', {error: err.message})
+	    }
+    }
 })
 
 app.get("/register", async (req, res, next) => {
@@ -183,7 +207,7 @@ app.get("/register", async (req, res, next) => {
 })
 
 app.get("/home", (req, res) => {
-	res.render("home", {user: service.user})
+	res.render("home", {user: req.user})
 })
 
 app.get("/", (req, res) => {
@@ -191,7 +215,7 @@ app.get("/", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-	service.log.error(err.toString(), {err});
+	log.error(err.stack, {err});
 	res.render("error", {err})
 })
 
@@ -205,9 +229,9 @@ process.on("SIGTERM", function () {
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	p.then(service.log.error).catch(service.log.error)
+	p.then(service.log.error).catch(log.error)
 });
 
-process.on('uncaughtException', service.log.error)
+process.on('uncaughtException', log.error)
 
 module.exports = { app, service };

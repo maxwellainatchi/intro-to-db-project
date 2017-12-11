@@ -2,28 +2,30 @@ const utils = require('./utils');
 const db = require('./db');
 const {ValidationError, Errors} = require('./errors');
 
-let validateLogin = function (username, password) {
+let validateLogin = async function (username, password) {
 	// TODO: escape password
 	let token = utils.sha512(password);
-	return utils.validateUsername(username).then(() => db.query(
+	await utils.validateUsername(username);
+	let results = await db.query(
 		`SELECT username, password 
 		 FROM Person 
 		 WHERE username='${username}' 
-		 	AND password='${token}';`
-	)).then(results => {
-		if (results[0]) {
-			return results[0].password
-		}
-		throw new ValidationError(Errors.InvalidCredentials, {username, password});
-	})
+		    AND password='${token}';`
+	);
+	if (results[0]) {
+		return results[0].password
+	}
+	throw new ValidationError(Errors.InvalidCredentials, {username, password});
 }
 
-let register = function (username, password) {
+let register = function (username, password, name) {
 	// TODO: escape password
 	let token = utils.sha512(password);
+	let [firstName, ...lastName] = name.split();
+	lastName = lastName.join(" ");
 	return utils.validateUsername(username).then(() => db.query(
-		`INSERT INTO Person (username, password)
-		 VALUES ('${username}', '${token}');`
+		`INSERT INTO Person (username, password, first_name, last_name)
+		 VALUES ('${username}', '${token}', '${firstName}', '${lastName}');`
 	)).then(() => {
 		return token
 	})
