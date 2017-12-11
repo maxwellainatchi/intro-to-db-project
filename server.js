@@ -95,7 +95,7 @@ app.get("/addcontent", async(req, res, next) => {
 
 app.post("/addcontent", async(req, res, next) => {
 	let pub = 0
-	if(req.body.public == "Public") {
+	if(req.body.public === "Public") {
         pub = 1
     }
 	try {
@@ -143,6 +143,28 @@ app.post("/proposedtags", async(req, res, next) => {
 			error: true
 		})
 	}
+})
+
+app.get("/proposedtags", async(req, res, next) => {
+	let results = await service.getProposedTags()
+	for (result in results) {
+		console.log(result.id)
+	}
+	res.render("proposedtags", {
+		results
+    })
+})
+
+app.post("/proposedtags", async(req, res, next) => {
+	let selectedTag = JSON.parse(req.body.propTags)
+	// console.log(req.body.propTag)
+	if(req.body.propAction == "accept") {
+		await service.acceptTag(selectedTag.id, selectedTag.username_tagger, service.user.username)
+	}
+	else {
+		await service.rejectTag(req.body.propTags.id, req.body.propTags.username_tagger, service.user.username)
+	}
+
 })
 
 app.post("/register", async (req, res, next) => {
