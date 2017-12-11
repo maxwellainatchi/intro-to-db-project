@@ -1,0 +1,22 @@
+doctype
+<html>
+head
+    title Add Tag
+body
+    if error
+        div=error
+    form#addContent(method="POST", action="/addTag")
+        div
+            select#content(name="content")
+                for contentx in content
+                    option(value=contentx.id) #{contentx.content_name}
+        div
+            div
+                label(for="firstName") What's the first name of your friend?
+                input#firstName(name="firstName")
+            div
+                label(for="lastName") What's his/her last name?
+                input#lastName(name="lastName")
+        div
+            input#Submit(type="Submit", value="Tag friend")
+</html>
