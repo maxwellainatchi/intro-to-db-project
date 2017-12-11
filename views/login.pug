@@ -4,9 +4,8 @@ head
     title Login
 body
     form#login(method="POST" action="/login")
-        div
-            if error
-                span=error
+        if error
+            div=error
         div
             label(for="username") Username:
             input#username(name="username")

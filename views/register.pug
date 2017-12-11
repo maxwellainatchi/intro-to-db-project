@@ -4,6 +4,8 @@ head
     title Register
 body
     form#login(method="POST" action="/register")
+        if error
+            div=error
         div
             label(for="username") Username:
             input#username(name="username")
