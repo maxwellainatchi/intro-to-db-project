@@ -5,7 +5,7 @@ Errors.initEnum(["InvalidCredentials", "InvalidCharacters"]);
 
 let ValidationError = class extends Error {
 	constructor (type, metadata, message) {
-		super()
+		super();
 		if (!type) { throw new Error(message, metadata) }
 		if (typeof type === 'string') {
 			this.type = Errors.enumValueOf(type);
@@ -25,9 +25,9 @@ let ValidationError = class extends Error {
 		return `${this.type}${this.metadata ? ` (${JSON.stringify(this.metadata)})`: ''}: ` +
 			   `${this.stack.slice(this.stack.indexOf('\n'))}`;
 	}
-}
+};
 
 module.exports = {
 	ValidationError,
 	Errors
-}
+};

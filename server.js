@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create req.state
 app.use((req, res, next) => {
-	req.state = {}
+	req.state = {};
 	next()
 });
 
@@ -36,14 +36,14 @@ app.use((req, res, next) => {
 		req.state.user = {username, token};
 		next()
 	}
-})
+});
 app.use((req, res, next) => {
 	if (["/login", "/register"].includes(req.url) && req.state.user) {
 		res.redirect('home')
 	} else {
 		next()
 	}
-})
+});
 
 app.use(require('./src/routes/auth'));
 app.use(require('./src/routes/tags'));
@@ -82,6 +82,6 @@ process.on('unhandledRejection', (reason, p) => {
 	p.then(service.log.error).catch(log.error)
 });
 
-process.on('uncaughtException', log.error)
+process.on('uncaughtException', log.error);
 
 module.exports = { app, service };

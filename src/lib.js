@@ -16,12 +16,12 @@ let validateLogin = async function (username, password) {
 		return results[0].password
 	}
 	throw new ValidationError(Errors.InvalidCredentials, {username, password});
-}
+};
 
 let register = function (username, password, name) {
 	// TODO: escape password
 	let token = utils.sha512(password);
-	let [firstName, ...lastName] = name.split();
+	let [firstName, ...lastName] = name.split(" ");
 	lastName = lastName.join(" ");
 	return utils.validateUsername(username).then(() => db.query(
 		`INSERT INTO Person (username, password, first_name, last_name)
@@ -29,7 +29,7 @@ let register = function (username, password, name) {
 	)).then(() => {
 		return token
 	})
-}
+};
 
 let userGroups = function (username) {
     return utils.validateUsername(username).then(() => db.query(
@@ -37,7 +37,7 @@ let userGroups = function (username) {
 		 FROM FriendGroup
 		 WHERE username='${username}';`
     )).then(results => results.map(result => result.group_name))
-}
+};
 
 let userGroupsOwn = function (username) {
     return utils.validateUsername(username).then(() => db.query(
@@ -52,29 +52,26 @@ let getVisibleContent = async function (username) {
         `SELECT FriendGroup.group_name
 		 FROM FriendGroup
 		 WHERE username='${username}';`
-    )).then(results => results.map(result => result.group_name))
-	let content = []
-	for (group in groups){
-       let contentx = await db.query(
-            `SELECT content.content_name, content.id
-		 FROM Share
-		 JOIN Content ON Content.id = Share.id
-		 WHERE group_name='${group}';`
-        )
-		for (i = 0; i < contentx.length; i++){
-			content.push(contentx[i])
-		}
-	}
+    )).then(results => results.map(result => result.group_name));
+	let content = [];
+	let properties = "content.content_name, content.id, content.username, content.timest, content.file_path";
+	groups.map(async group => {
+        let contentx = await db.query(
+            `SELECT ${properties}
+			 FROM Share
+			 JOIN Content ON Content.id = Share.id
+			 WHERE group_name='${group}';`
+        );
+        content = content.concat(contentx);
+	});
     let contenty = await db.query(
-        `SELECT content.content_name,id
+        `SELECT ${properties}
 		 FROM content
 		 WHERE public='1';`
-    )
-    for (i = 0; i < contenty.length; i++){
-        content.push(contenty[i])
-    }
+    );
+    content = content.concat(contenty);
 	return content
-}
+};
 
 let addLike = async function(username, content) {
     await utils.validateUsername(username).then(() => db.query(
@@ -94,17 +91,15 @@ let countLikes = async function( content) {
 
 
 let getUsernames = async function (firstname, lastname) {
-    var userlist = []
-    userlist = await db.query(
+    let userlist = await db.query(
         `SELECT username
 		 FROM Person
 		 WHERE first_name='${firstname}' AND last_name='${lastname}';`
-    ).then(results => results.map(result => result.username))
-    console.log("user list is:" + userlist.length)
-    console.log(userlist[0])
+    ).then(results => results.map(result => result.username));
+    console.log("user list is:" + userlist.length);
+    console.log(userlist[0]);
     return userlist[0]
-}
-
+};
 
 let addFriendToGroup = function (username, friendgroup, owner) {
     return utils.validateUsername(username).then(() => db.query(
@@ -113,7 +108,7 @@ let addFriendToGroup = function (username, friendgroup, owner) {
     )).then(() => {
         return true
     })
-}
+};
 
 let removeFriendfromGroup = function (username, friendgroup, owner) {
     return utils.validateUsername(username).then(() => db.query(
@@ -129,7 +124,7 @@ let createFriendGroup = function(owner, title, desc) {
 		`INSERT INTO FriendGroup (group_name, username, description)
 		VALUES ('${title}','${owner}','${desc}');`
 	))
-}
+};
 
 let addContent = function(username, filePath, title, pub) {
 	return utils.validateUsername(username).then(() => db.query(
@@ -140,7 +135,7 @@ let addContent = function(username, filePath, title, pub) {
 			`SELECT LAST_INSERT_ID()`
 		)
 	).then(results => results.map(result => result['LAST_INSERT_ID()']))
-}
+};
 
 
 let isVisible = async function(username, content) {
@@ -148,12 +143,12 @@ let isVisible = async function(username, content) {
         `SELECT group_name
 		 FROM Share
 		 WHERE id='${content.id}';`
-    )).then(results => results.map(result => result.group_name))
+    )).then(results => results.map(result => result.group_name));
     let friendGroups = await db.query(
         `SELECT group_name
 		 FROM member
 		 WHERE username='${username}';`
-    ).then(results => results.map(result => result.group_name))
+    ).then(results => results.map(result => result.group_name));
     for (i =0;i<groupsShared.length;i++){
         for (j =0;j<friendGroups.length;j++)
         {
@@ -162,14 +157,14 @@ let isVisible = async function(username, content) {
         }
     }
     return false
-}
+};
 
 let shareToGroup = async function(pid, group_name, username) {
 	return utils.validateUsername(username).then(() => db.query(
 		`INSERT INTO Share (id, group_name, username)
 		VALUES ('${pid}','${group_name}','${username}');`
 	))
-}
+};
 
 let addTag = async function(usernamex, content, usernamey) {
     let approved = false;
@@ -184,16 +179,14 @@ let addTag = async function(usernamex, content, usernamey) {
     } else {
     	return false
 	}
-}
+};
 
 let getComments = function(pid) {
 	return db.query(
-		`SELECT comment_text FROM Comment
+		`SELECT * FROM Comment
 		WHERE id='${pid}';`
-	).then(() => {
-		return true
-	})
-}
+	)
+};
 
 let getProposedTags = function(username) {
 	return utils.validateUsername(username).then(() => db.query(
@@ -201,10 +194,10 @@ let getProposedTags = function(username) {
 		JOIN Tag ON Tag.id = Content.id
 		WHERE Tag.username_taggee='${username}' AND Tag.status=0;`
 	)).then(results => {
-		console.log(results)
+		console.log(results);
 		return results
     })
-}
+};
 
 let acceptTag = function(pid, tagger, taggee) {
 	return utils.validateUsername(taggee).then(() => db.query(
@@ -212,14 +205,34 @@ let acceptTag = function(pid, tagger, taggee) {
 		SET status=1
 		WHERE id='${pid}' AND username_tagger='${tagger}' AND username_taggee='${taggee}';`
 	))
-}
+};
 
 let rejectTag = function(pid, tagger, taggee) {
     return utils.validateUsername(taggee).then(() => db.query(
         `DELETE FROM Tag
 		WHERE id='${pid}' AND username_tagger='${tagger}' AND username_taggee='${taggee}';`
     ))
-}
+};
+
+let addComment = (username, text, itemId) => {
+	return db.query(
+		`INSERT INTO Comment (id, username, comment_text)
+		VALUES (${itemId}, '${username}', '${text}');`
+	)
+};
+
+let getContentItem = async (id) => {
+	let content = (await db.query(
+		`SELECT * FROM Content
+		WHERE Content.id='${id}'`
+	))[0];
+	content.comments = await getComments(id);
+	content.tags = await db.query(
+		`SELECT * FROM tag 
+		WHERE id='${id}' AND status=1`
+	);
+	return content
+};
 
 module.exports = {
 	validateLogin,
@@ -237,7 +250,9 @@ module.exports = {
 	createFriendGroup,
 	acceptTag,
 	addTag,
+	getContentItem,
 	isVisible,
 	shareToGroup,
+	addComment,
 	addLike
-}
+};

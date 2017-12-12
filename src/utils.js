@@ -16,9 +16,9 @@ let validateUsername = function (username) {
 		}
 	})
 
-}
+};
 
 module.exports = {
 	sha512,
 	validateUsername
-}
+};

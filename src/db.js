@@ -10,7 +10,7 @@ let connect = function () {
 		database : 'PriCoSha'
 	});
 	return connection.connect();
-}
+};
 
 let query = function (query) {
 	return new Promise(function (resolve, reject) {
@@ -21,10 +21,10 @@ let query = function (query) {
 			resolve(results)
 		});
 	});
-}
+};
 
 let disconnect = function () {
 	return connection.end();
-}
+};
 
-module.exports = { connect, query, disconnect }
+module.exports = { connect, query, disconnect };

@@ -1,6 +1,12 @@
 <html>
 head
     title Home
+    style.
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 15px;
+        }
 body
     div
         form#logout(method="POST" action="/logout")
@@ -18,6 +24,19 @@ body
         form#removeFriendfromGroup(method="GET" action="/deleteFriend")
             input(type="submit" value="Delete Friend")
     h1 Welcome, #{user.username}!
-    p Application coming soon...
+    main#content: table
+        tr
+            th ID
+            th Content
+            th Author
+            th Posted at
+            th Comments & Tags
+        for item in content.sort((p, c) => p.timest < c.timest)
+            tr
+                th=item.id
+                td: a(href=item.file_path target="_blank")=item.content_name
+                td=item.username
+                td=new Date(item.timest).toLocaleString("en-US")
+                td: a(href=`/content?id=${item.id}`) More...
 
 </html>

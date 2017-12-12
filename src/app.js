@@ -80,6 +80,6 @@ let PriCoSha = class {
 		this.user = null;
 		this.db.disconnect();
 	}
-}
+};
 
-module.exports = PriCoSha
+module.exports = PriCoSha;

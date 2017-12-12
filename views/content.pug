@@ -1,0 +1,21 @@
+<html>
+head
+    title=content.content_name
+body
+    h1: a(href=content.file_path target="_blank")=content.content_name
+    div
+        h2 Tags
+        if content.tags.length === 0
+            p No tags
+        ul: for tag in content.tags
+            li #{tag.username_tagger} tagged #{tag.username_taggee} at #{new Date(tag.timest).toLocaleString("en-US")}
+        h2 Comments
+        if content.comments.length === 0
+            p No comments
+        ul: for comment in content.comments
+            li #{comment.comment_text} - #{comment.username} at #{new Date(comment.timest).toLocaleString("en-US")}
+        form(action="/addComment" method="POST")
+            input(name="text")
+            input(type="submit" value="Add Comment")
+            input(type="hidden" value=content.id name="itemId")
+</html>
