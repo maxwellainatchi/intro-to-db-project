@@ -48,8 +48,9 @@ let getVisibleContent = async function (username) {
 	let content = []
 	for (group in groups){
        let contentx = await db.query(
-            `SELECT content.content_name,id
-		 FROM share
+            `SELECT content.content_name, content.id
+		 FROM Share
+		 JOIN Content ON Content.id = Share.id
 		 WHERE group_name='${group}';`
         )
 		for (i = 0; i < contentx.length; i++){
