@@ -39,6 +39,14 @@ let userGroups = function (username) {
     )).then(results => results.map(result => result.group_name))
 }
 
+let userGroupsOwn = function (username) {
+    return utils.validateUsername(username).then(() => db.query(
+        `SELECT Friendgroup.group_name
+		 FROM Friendgroup
+		 WHERE username='${username}';`
+    )).then(results => results.map(result => result.group_name))
+}
+
 let getVisibleContent = async function (username) {
     let groups = await utils.validateUsername(username).then(() => db.query(
         `SELECT FriendGroup.group_name
@@ -102,6 +110,15 @@ let addFriendToGroup = function (username, friendgroup, owner) {
     return utils.validateUsername(username).then(() => db.query(
         `INSERT INTO Member (username, group_name, username_creator)
 		 VALUES ('${username}','${friendgroup}','${owner}');`
+    )).then(() => {
+        return true
+    })
+}
+
+let removeFriendfromGroup = function (username, friendgroup, owner) {
+    return utils.validateUsername(username).then(() => db.query(
+        `DELETE FROM Member
+		 WHERE group_name ='${friendgroup}' AND username = '${username}';`
     )).then(() => {
         return true
     })
@@ -208,9 +225,11 @@ module.exports = {
 	validateLogin,
 	register,
 	userGroups,
+	userGroupsOwn,
 	getVisibleContent,
 	getUsernames,
 	addFriendToGroup,
+	removeFriendfromGroup,
 	addContent,
 	getComments,
 	getProposedTags,
@@ -219,6 +238,6 @@ module.exports = {
 	acceptTag,
 	addTag,
 	isVisible,
-	shareToGroup
+	shareToGroup,
 	addLike
 }

@@ -1,0 +1,26 @@
+<html>
+head
+    title Remove Friend
+body
+    div
+        if success
+            p Friend Removed :/
+    div
+        if error
+            p Failed to remove friend
+    p Select friend group to remove from from:
+    form#removeFriendfromGroup(method="POST", action="")
+        div
+            select(name="friendGroup")
+                for group in groups
+                    option(value=group) #{group}
+        div
+            label(for="firstName") What's the first name of your friend?
+            input#firstName(name="firstName")
+        div
+            label(for="lastName") What's his/her last name?
+            input#lastName(name="lastName")
+        div
+            input#Submit(type="submit", value="Delete Friend")
+
+</html>
