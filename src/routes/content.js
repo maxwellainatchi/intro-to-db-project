@@ -35,4 +35,20 @@ router.post("/addcontent", async(req, res, next) => {
     }
 });
 
+router.post("/addLike", async(req, res, next) => {
+    try {
+        let success = await lib.addLike(req.user.username, req.body.content)
+        if (!success) {
+            throw new Error("Not visible");
+        }
+    } catch (err) {
+        let message;
+        if (err.code === "ER_DUP_ENTRY") {
+            message = "already Liked"
+        } else {
+            message = err.message
+        }
+    }
+})
+
 module.exports = router;

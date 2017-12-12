@@ -35,6 +35,7 @@ router.post("/addTag", async(req, res, next) => {
         let content = await lib.getVisibleContent(req.state.user.username)
         res.render('addTag', {error: "You don't have that friend bb", content})
     }
+    res.redirect("/home")
 })
 
 router.get("/proposedtags", async(req, res, next) => {

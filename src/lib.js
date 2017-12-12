@@ -68,6 +68,22 @@ let getVisibleContent = async function (username) {
 	return content
 }
 
+let addLike = async function(username, content) {
+    await utils.validateUsername(username).then(() => db.query(
+        `INSERT INTO Like (id, username) 
+    VALUES ('${content}','${username}');`
+    ));
+}
+
+let countLikes = async function( content) {
+    let contentx = await db.query(
+        `SELECT count(date) as numLikes
+		 FROM content
+		 WHERE id='${content}';`
+    )
+	return contentx
+}
+
 
 let getUsernames = async function (firstname, lastname) {
     var userlist = []
@@ -204,4 +220,5 @@ module.exports = {
 	addTag,
 	isVisible,
 	shareToGroup
+	addLike
 }
