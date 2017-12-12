@@ -21,5 +21,10 @@ body
                 option Public
                 option Private
         div
+            p If private, what group do you want to share it with?
+            select(name="friendgroup")
+                for group in groups
+                    option(value=group) #{group}
+        div
             input#Submit(type="Submit", value="Post Content")
 </html>

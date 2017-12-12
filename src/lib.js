@@ -102,10 +102,13 @@ let addContent = function(username, filePath, title, pub) {
 	return utils.validateUsername(username).then(() => db.query(
 		`INSERT INTO Content (username, file_path, content_name, public)
 		VALUES ('${username}','${filePath}','${title}','${pub}');`
-	)).then(() => {
-        return true
-    })
+	)).then(() =>
+		db.query(
+			`SELECT LAST_INSERT_ID()`
+		)
+	).then(results => results.map(result => result['LAST_INSERT_ID()']))
 }
+
 
 let isVisible = async function(username, content) {
     let groupsShared = await utils.validateUsername(username).then(() => db.query(
@@ -126,6 +129,13 @@ let isVisible = async function(username, content) {
         }
     }
     return false
+}
+
+let shareToGroup = async function(pid, group_name, username) {
+	return utils.validateUsername(username).then(() => db.query(
+		`INSERT INTO Share (id, group_name, username)
+		VALUES ('${pid}','${group_name}','${username}');`
+	))
 }
 
 let addTag = async function(usernamex, content, usernamey) {
@@ -192,5 +202,6 @@ module.exports = {
 	createFriendGroup,
 	acceptTag,
 	addTag,
-	isVisible
+	isVisible,
+	shareToGroup
 }
